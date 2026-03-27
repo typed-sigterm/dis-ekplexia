@@ -49,9 +49,6 @@ export default defineNuxtConfig({
     manifest: {
       name: 'DisEkplexia',
       description: '过度惊跳反应脱敏训练工具',
-      theme_color: '#00c16a',
-      background_color: '#000000',
-      display: 'standalone',
       orientation: 'portrait',
       icons: [{
         src: '/logo.png',
@@ -63,7 +60,6 @@ export default defineNuxtConfig({
     workbox: {
       globPatterns: ['**/*.{js,css,html,ico,png,svg,wav}'],
     },
-    registerWebManifestInRouteRules: true,
   },
 
   vite: {
