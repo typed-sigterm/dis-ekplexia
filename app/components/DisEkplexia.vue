@@ -24,7 +24,7 @@ function startTraining() {
 </script>
 
 <template>
-  <UContainer class="py-6 md:py-10">
+  <UContainer class="mt-6 md:mt-10">
     <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
       <UCard class="panel-main">
         <template #header>
