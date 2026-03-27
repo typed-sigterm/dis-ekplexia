@@ -41,7 +41,7 @@ export default defineNuxtConfig({
       'audio/chime-soft.wav',
       'audio/chime-focus.wav',
       'audio/chime-alert.wav',
-      'logo.svg',
+      'logo.png',
     ],
     manifest: {
       name: 'DisEkplexia',
@@ -52,9 +52,9 @@ export default defineNuxtConfig({
       display: 'standalone',
       orientation: 'portrait',
       icons: [{
-        src: '/logo.svg',
+        src: '/logo.png',
         sizes: '512x512',
-        type: 'image/svg+xml',
+        type: 'image/png',
         purpose: 'any maskable',
       }],
     },
@@ -68,8 +68,8 @@ export default defineNuxtConfig({
       include: [
         '@vue/devtools-core',
         '@vue/devtools-kit',
-        'workbox-window',
         '@vueuse/core',
+        'workbox-window',
       ],
     },
   },
