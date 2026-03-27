@@ -30,11 +30,11 @@ function startTraining() {
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="text-xs uppercase tracking-[0.2em] text-muted">
+              <p class="text-xs tracking-[0.2em] text-muted">
                 DisEkplexia
               </p>
               <h1 class="text-2xl font-semibold md:text-3xl">
-                惊跳反应脱敏训练
+                过度惊跳反应脱敏训练
               </h1>
             </div>
           </div>

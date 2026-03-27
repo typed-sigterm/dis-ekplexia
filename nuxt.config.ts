@@ -14,6 +14,9 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'zh-CN' },
       title: 'DisEkplexia',
+      meta: [
+        { name: 'description', content: '过度惊跳反应脱敏训练工具' },
+      ],
     },
   },
 
@@ -46,7 +49,7 @@ export default defineNuxtConfig({
     manifest: {
       name: 'DisEkplexia',
       short_name: 'DisEkplexia',
-      description: 'A PWA for training and reducing over-startle responses with randomized audio drills.',
+      description: '过度惊跳反应脱敏训练工具',
       theme_color: '#00c16a',
       background_color: '#000000',
       display: 'standalone',
