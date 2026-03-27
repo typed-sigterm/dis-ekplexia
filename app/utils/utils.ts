@@ -4,16 +4,12 @@ export interface AudioPreset {
   src: string
 }
 
-export type TriggerReason = 'timer' | 'manual';
-
 export interface TrainingLogEntry {
-  id: string
   delaySeconds: number
   scheduledAt: string
   firedAt: string
   presetId: string
   presetLabel: string
-  reason: TriggerReason
   success: boolean
   error?: string
 }
@@ -25,13 +21,6 @@ export const audioPresets: AudioPreset[] = [
 ];
 
 export const MAX_LOG_COUNT = 300;
-
-export function clampPositiveInt(input: number, fallback: number) {
-  if (!Number.isFinite(input))
-    return fallback;
-
-  return Math.max(15, Math.floor(input));
-}
 
 export function randomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;

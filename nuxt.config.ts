@@ -41,31 +41,25 @@ export default defineNuxtConfig({
       'audio/chime-soft.wav',
       'audio/chime-focus.wav',
       'audio/chime-alert.wav',
-      'pwa-icon.svg',
+      'logo.svg',
     ],
     manifest: {
       name: 'DisEkplexia',
       short_name: 'DisEkplexia',
       description: 'A PWA for training and reducing over-startle responses with randomized audio drills.',
-      theme_color: '#12372a',
-      background_color: '#f5f8f1',
+      theme_color: '#00c16a',
+      background_color: '#000000',
       display: 'standalone',
       orientation: 'portrait',
-      icons: [
-        {
-          src: '/pwa-icon.svg',
-          sizes: '512x512',
-          type: 'image/svg+xml',
-          purpose: 'any maskable',
-        },
-      ],
+      icons: [{
+        src: '/logo.svg',
+        sizes: '512x512',
+        type: 'image/svg+xml',
+        purpose: 'any maskable',
+      }],
     },
     workbox: {
       globPatterns: ['**/*.{js,css,html,ico,png,svg,wav}'],
-    },
-    devOptions: {
-      enabled: true,
-      type: 'module',
     },
   },
 

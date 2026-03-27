@@ -13,7 +13,6 @@ export const useDisEkplexia = createGlobalState(() => {
   const logs = useStorage<TrainingLogEntry[]>('dis-ekplexia:logs', []);
 
   const isRunning = ref(false);
-  const nextTriggerAt = ref<number | null>(null);
   const activeDelaySeconds = ref<number | null>(null);
   const activeScheduledAt = ref<number | null>(null);
 
@@ -28,27 +27,6 @@ export const useDisEkplexia = createGlobalState(() => {
     request: requestWakeLock,
     release: releaseWakeLock,
   } = useWakeLock();
-
-  const remainingSeconds = computed(() => {
-    if (!nextTriggerAt.value)
-      return null;
-
-    const left = Math.ceil((nextTriggerAt.value - now.value) / 1000);
-    return Math.max(0, left);
-  });
-
-  function normalizeRange() {
-    const min = clampPositiveInt(minSeconds.value, 60);
-    const max = clampPositiveInt(maxSeconds.value, 120);
-
-    minSeconds.value = Math.min(min, max);
-    maxSeconds.value = Math.max(min, max);
-
-    return {
-      min: minSeconds.value,
-      max: maxSeconds.value,
-    };
-  }
 
   function appendLog(entry: TrainingLogEntry) {
     logs.value = [entry, ...logs.value].slice(0, MAX_LOG_COUNT);
@@ -129,22 +107,22 @@ export const useDisEkplexia = createGlobalState(() => {
     }, { once: true });
   }
 
-  async function triggerSound(reason: TriggerReason) {
+  async function triggerSound(log: boolean = true) {
     const preset = pickRandomPreset();
     const nowAt = Date.now();
 
     if (!preset) {
-      appendLog({
-        id: crypto.randomUUID(),
-        delaySeconds: activeDelaySeconds.value ?? 0,
-        scheduledAt: toIsoDate(activeScheduledAt.value ?? nowAt),
-        firedAt: toIsoDate(nowAt),
-        presetId: 'none',
-        presetLabel: 'No preset available',
-        reason,
-        success: false,
-        error: '没有可用的预设音频。',
-      });
+      if (log) {
+        appendLog({
+          delaySeconds: activeDelaySeconds.value ?? 0,
+          scheduledAt: toIsoDate(activeScheduledAt.value ?? nowAt),
+          firedAt: toIsoDate(nowAt),
+          presetId: 'none',
+          presetLabel: 'No preset available',
+          success: false,
+          error: '没有可用的预设音频。',
+        });
+      }
 
       return;
     }
@@ -155,30 +133,30 @@ export const useDisEkplexia = createGlobalState(() => {
     try {
       await playPreset(preset);
 
-      appendLog({
-        id: crypto.randomUUID(),
-        delaySeconds,
-        scheduledAt: toIsoDate(scheduledAt),
-        firedAt: toIsoDate(nowAt),
-        presetId: preset.id,
-        presetLabel: preset.label,
-        reason,
-        success: true,
-      });
+      if (log) {
+        appendLog({
+          delaySeconds,
+          scheduledAt: toIsoDate(scheduledAt),
+          firedAt: toIsoDate(nowAt),
+          presetId: preset.id,
+          presetLabel: preset.label,
+          success: true,
+        });
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : '音频播放失败，可能被系统限制。';
 
-      appendLog({
-        id: crypto.randomUUID(),
-        delaySeconds,
-        scheduledAt: toIsoDate(scheduledAt),
-        firedAt: toIsoDate(nowAt),
-        presetId: preset.id,
-        presetLabel: preset.label,
-        reason,
-        success: false,
-        error: message,
-      });
+      if (log) {
+        appendLog({
+          delaySeconds,
+          scheduledAt: toIsoDate(scheduledAt),
+          firedAt: toIsoDate(nowAt),
+          presetId: preset.id,
+          presetLabel: preset.label,
+          success: false,
+          error: message,
+        });
+      }
 
       toast.add({
         title: '播放失败',
@@ -192,15 +170,13 @@ export const useDisEkplexia = createGlobalState(() => {
   function scheduleNextTrigger() {
     clearPendingTimeout();
 
-    const { min, max } = normalizeRange();
-    const delaySeconds = randomInt(min, max);
+    const delaySeconds = randomInt(minSeconds.value, maxSeconds.value);
 
     activeDelaySeconds.value = delaySeconds;
     activeScheduledAt.value = Date.now();
-    nextTriggerAt.value = activeScheduledAt.value + delaySeconds * 1000;
 
     timeoutId.value = setTimeout(async () => {
-      await triggerSound('timer');
+      await triggerSound();
 
       if (!isRunning.value)
         return;
@@ -212,8 +188,6 @@ export const useDisEkplexia = createGlobalState(() => {
   async function start() {
     if (isRunning.value)
       return;
-
-    normalizeRange();
 
     isRunning.value = true;
     ensureTimerTicking();
@@ -247,7 +221,6 @@ export const useDisEkplexia = createGlobalState(() => {
 
   function stop() {
     isRunning.value = false;
-    nextTriggerAt.value = null;
     activeDelaySeconds.value = null;
     activeScheduledAt.value = null;
 
@@ -263,7 +236,7 @@ export const useDisEkplexia = createGlobalState(() => {
   async function playTestSound() {
     activeDelaySeconds.value = 0;
     activeScheduledAt.value = Date.now();
-    await triggerSound('manual');
+    await triggerSound(false);
   }
 
   function clearLogs() {
@@ -273,8 +246,6 @@ export const useDisEkplexia = createGlobalState(() => {
   return {
     minSeconds,
     maxSeconds,
-    remainingSeconds,
-    nextTriggerAt,
     isRunning,
     wakeLockSupported,
     wakeLockActive,
