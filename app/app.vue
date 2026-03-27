@@ -1,5 +1,7 @@
 <template>
   <UApp :toaster="{ position: 'top-center' }">
+    <NuxtPwaManifest />
+
     <DisEkplexia />
 
     <div class="text-muted mt-4 mx-4 md:mx-12 flex justify-between">
